@@ -1,0 +1,362 @@
+swagger: "2.0"
+info:
+  title: API de Tickets e Incidentes
+  description: API RESTFull para gestión de Tickets e Incidentes.
+  version: "1.0.0"
+
+host: localhost:8000
+basePath: /
+schemes:
+  - http
+
+tags:
+  - name: Incidents
+    description: Operaciones relacionadas con incidentes
+  - name: Tickets
+    description: Operaciones relacionadas con tickets
+  - name: Clients
+    description: Operaciones relacionadas con clientes
+
+paths:
+  /api/incidents/:
+    get:
+      tags:
+        - Incidents
+      summary: List incidents
+      responses:
+        200:
+          description: List of incidents
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Incident'
+    post:
+      tags:
+        - Incidents
+      summary: Create a new incident
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - description
+              - incident_type
+            properties:
+              description:
+                type: string
+                example: Blue screen on startup
+              incident_type:
+                type: string
+                example: Software
+      responses:
+        201:
+          description: Incident created
+          schema:
+            $ref: '#/definitions/Incident'
+
+  /api/incidents/{incident_id}:
+    get:
+      tags:
+        - Incidents
+      summary: Get an incident by ID
+      parameters:
+        - name: incident_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Incident found
+          schema:
+            $ref: '#/definitions/Incident'
+        404:
+          description: Incident not found
+    put:
+      tags:
+        - Incidents
+      summary: Modify an existing incident
+      parameters:
+        - name: incident_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+                example: Fixed blue screen
+              incident_type:
+                type: string
+                example: Hardware
+      responses:
+        200:
+          description: Incident modified
+          schema:
+            $ref: '#/definitions/Incident'
+        404:
+          description: Incident not found
+
+  /api/tickets/:
+    get:
+      tags:
+        - Tickets
+      summary: List tickets
+      responses:
+        200:
+          description: List of tickets
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Ticket'
+    post:
+      tags:
+        - Tickets
+      summary: Create a new ticket
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - incident_id
+              - client_id
+            properties:
+              incident_id:
+                type: integer
+                example: 1
+              client_id:
+                type: integer
+                example: 1
+              service:
+                type: string
+                example: Email Support
+      responses:
+        201:
+          description: Ticket created
+          schema:
+            $ref: '#/definitions/Ticket'
+        400:
+          description: Invalid incident or client
+        404:
+          description: Client not found
+
+  /api/tickets/{ticket_id}:
+    get:
+      tags:
+        - Tickets
+      summary: Get a ticket by ID
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ticket found
+          schema:
+            $ref: '#/definitions/Ticket'
+        404:
+          description: Ticket not found
+    put:
+      tags:
+        - Tickets
+      summary: Modify an existing ticket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              client_id:
+                type: integer
+                example: 2
+              service:
+                type: string
+                example: Phone Support
+              incident_id:
+                type: integer
+                example: 2
+              status:
+                type: string
+                enum: [Open, Closed]
+      responses:
+        200:
+          description: Ticket modified
+          schema:
+            $ref: '#/definitions/Ticket'
+        400:
+          description: Invalid incident
+        404:
+          description: Ticket or client not found
+
+  /api/tickets/{ticket_id}/close:
+    put:
+      tags:
+        - Tickets
+      summary: Close a ticket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ticket closed
+          schema:
+            $ref: '#/definitions/Ticket'
+        404:
+          description: Ticket not found
+
+  /api/clients/:
+    get:
+      tags:
+        - Clients
+      summary: List clients
+      responses:
+        200:
+          description: List of clients
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Client'
+    post:
+      tags:
+        - Clients
+      summary: Create a new client
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - phone_number
+            properties:
+              name:
+                type: string
+                example: John Doe
+              email:
+                type: string
+                example: john@example.com
+              phone_number:
+                type: string
+                example: 555-1234
+      responses:
+        201:
+          description: Client created
+          schema:
+            $ref: '#/definitions/Client'
+
+  /api/clients/{client_id}:
+    get:
+      tags:
+        - Clients
+      summary: Get a client by ID
+      parameters:
+        - name: client_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Client found
+          schema:
+            $ref: '#/definitions/Client'
+        404:
+          description: Client not found
+    put:
+      tags:
+        - Clients
+      summary: Modify an existing client
+      parameters:
+        - name: client_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Jane Doe
+              email:
+                type: string
+                example: jane@example.com
+              phone_number:
+                type: string
+                example: 555-5678
+      responses:
+        200:
+          description: Client modified
+          schema:
+            $ref: '#/definitions/Client'
+        404:
+          description: Client not found
+
+definitions:
+  Incident:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      incident_type:
+        type: string
+
+  Ticket:
+    type: object
+    properties:
+      id:
+        type: integer
+      client:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          email:
+            type: string
+          phone_number:
+            type: string
+      service:
+        type: string
+      incident_id:
+        type: integer
+      status:
+        type: string
+        enum: [Open, Closed]
+      creation_date:
+        type: string
+      closing_date:
+        type: string
+
+  Client:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+      phone_number:
+        type: string
